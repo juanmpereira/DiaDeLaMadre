@@ -91,7 +91,20 @@
         <section class="timeline-board" id="timeline-board" aria-label="Jardín de recuerdos"></section>
       </section>
 
-      <!-- MODAL DE RECUERDOS (FOTOS / VIDEOS) -->
+      <!-- OVERLAY INTERACTIVO: DESAFÍO Y EFECTO BROTE/FLORECER -->
+      <div class="modal-backdrop hidden" id="bloom-overlay">
+        <div class="bloom-box">
+          <button class="modal-close-btn" id="bloom-close-x" type="button" title="Cerrar">&times;</button>
+          <div class="bloom-icon-stage" id="bloom-stage">🌱</div>
+          <h2 class="bloom-title" id="bloom-title">¡Hacé florecer este recuerdo!</h2>
+          <p class="bloom-instruction" id="bloom-instruction">Hacé clic en el botón para regar el brote y abrir las fotos 🚿</p>
+          <button type="button" class="btn btn-primary bloom-action-btn" id="bloom-action-btn">
+            🚿 Regar la Flor
+          </button>
+        </div>
+      </div>
+
+      <!-- MODAL DE RECUERDOS (FOTOS / VIDEOS POLAROID) -->
       <div class="modal-backdrop hidden" id="memory-modal">
         <section class="card memory-modal-card" id="memory-card">
           <button class="modal-close-btn" id="modal-close-x" type="button" title="Cerrar modal">&times;</button>

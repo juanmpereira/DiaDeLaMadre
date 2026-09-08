@@ -11,6 +11,13 @@ const memories = [
     description:
       "Estas primeras fotos guardan el inicio de todo: tus cuidados constantes desde el primer día, tu ternura infinita y cómo nos rodeaste de amor.",
     note: "🌸 Primera parada de nuestro Jardín de Recuerdos.",
+    bloom: {
+      stageIcon: "🌱",
+      title: "¡Hacé florecer el brote!",
+      instruction: "Tocá la regadera 🚿 para regar la semilla con cariño y abrir tus primeras fotos.",
+      actionBtn: "🚿 Regar la Flor",
+      bloomedIcon: "🌸",
+    },
     gallery: [
       {
         type: "image",
@@ -18,6 +25,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
         alt: "Primeros años con Mamá",
         caption: "Tus primeros cuidados y abrazos que nos dieron refugio desde el primer día.",
+        backNote: "💌 'Tus abrazos siempre fueron y serán nuestro lugar más seguro en el mundo. ¡Gracias Mamá!'",
       },
       {
         type: "image",
@@ -25,6 +33,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1537673156864-5d2c72de7824?auto=format&fit=crop&w=800&q=80",
         alt: "Mamá cuidándonos",
         caption: "Cada sonrisa tuya nos enseñó a sentirnos seguros y amados.",
+        backNote: "💌 'Gracias por cada noche en vela, por la paciencia y por enseñarnos a amar.'",
       },
       {
         type: "image",
@@ -32,6 +41,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80",
         alt: "Primeras fotos juntos",
         caption: "Recuerdos llenos de dulzura que abrieron el camino de nuestra familia.",
+        backNote: "💌 'Mirar estas fotos es volver a sentir la ternura de la infancia a tu lado.'",
       },
       {
         type: "image",
@@ -39,6 +49,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&q=80",
         alt: "Manos unidas",
         caption: "Sosteniendo nuestras manos en cada paso importante.",
+        backNote: "💌 'Nos diste el empujón para volar, pero siempre sosteniendo nuestra mano.'",
       },
       {
         type: "image",
@@ -46,6 +57,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80",
         alt: "Inicio de la historia",
         caption: "Gracias por regar nuestro crecimiento con paciencia y cariño.",
+        backNote: "💌 'Todo lo lindo que floreció en nuestras vidas empezó por tus semillas de amor.'",
       },
     ],
   },
@@ -57,6 +69,13 @@ const memories = [
     description:
       "A lo largo de los años, fuiste el sol de todos los días: las tardes compartidas, las charlas reconfortantes, los mates y tu risa contagiosa.",
     note: "🌻 Segunda parada: El calor y la alegría de cada día.",
+    bloom: {
+      stageIcon: "☁️",
+      title: "¡Hacé salir el sol!",
+      instruction: "Tocá el sol ☀️ para iluminar el día y desplegar las fotos de cada día.",
+      actionBtn: "☀️ Encender el Sol",
+      bloomedIcon: "🌻",
+    },
     gallery: [
       {
         type: "image",
@@ -64,6 +83,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
         alt: "Momentos en casa",
         caption: "Tardes de charlas eternas y risas que alegran la casa.",
+        backNote: "💌 'Una charla de mates con vos arregla hasta el día más complicado.'",
       },
       {
         type: "image",
@@ -71,6 +91,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
         alt: "Charlas inolvidables",
         caption: "Siempre dispuesta a escuchar y dar el consejo justo en el momento exacto.",
+        backNote: "💌 'Tus palabras y consejos sabios son nuestra mejor brújula.'",
       },
       {
         type: "image",
@@ -78,6 +99,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80",
         alt: "Creciendo juntos",
         caption: "Viendo cómo crecemos sin dejar de ser nuestra mayor compañera.",
+        backNote: "💌 'El tiempo pasa pero tu amor de madre permanece intacto e infinito.'",
       },
       {
         type: "image",
@@ -85,6 +107,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
         alt: "Tu alegría de siempre",
         caption: "Tu energía positiva transforma cualquier día gris en un día radiante.",
+        backNote: "💌 'Tu risa es la música favorita de toda la casa.'",
       },
       {
         type: "image",
@@ -92,6 +115,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=800&q=80",
         alt: "Abrazos de Mamá",
         caption: "Estar a tu lado es siempre sentirnos en casa.",
+        backNote: "💌 'Donde estés vos, ahí está nuestro hogar.'",
       },
     ],
   },
@@ -103,6 +127,13 @@ const memories = [
     description:
       "Las pasiones, los deportes, las risas en la cancha o celebrando cada logro juntos. Tu aliento incondicional nos llena de orgullo.",
     note: "🌹 Tercera parada: Tu entusiasmo y ejemplo de vida.",
+    bloom: {
+      stageIcon: "🌹",
+      title: "¡Desplegá la flor de las pasiones!",
+      instruction: "Soplá o tocá la rosa 🌹 para esparcir sus pétalos de alegría y emoción.",
+      actionBtn: "🌹 Esparcir Pétalos",
+      bloomedIcon: "🎉",
+    },
     gallery: [
       {
         type: "image",
@@ -110,6 +141,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
         alt: "Pasión compartida",
         caption: "Celebrando momentos llenos de emoción y energía.",
+        backNote: "💌 'Nuestra hincha incondicional número uno. ¡Qué lindo gritar goles juntos!'",
       },
       {
         type: "image",
@@ -117,6 +149,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
         alt: "Siempre alentando",
         caption: "Tu presencia en cada evento importante marcando la diferencia.",
+        backNote: "💌 'Saber que estás en la tribuna o al lado nuestro lo hace todo especial.'",
       },
       {
         type: "image",
@@ -124,6 +157,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
         alt: "Alegrías en equipo",
         caption: "Compartiendo la misma pasión y festejando cada triunfo.",
+        backNote: "💌 'En las buenas y en las malas, siempre unidos compartiendo pasiones.'",
       },
       {
         type: "image",
@@ -131,6 +165,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
         alt: "Momentos de felicidad",
         caption: "Las mejores sonrisas que nacen de compartir lo que nos gusta.",
+        backNote: "💌 'Tus ganas de disfrutar la vida contagian a cualquiera.'",
       },
       {
         type: "image",
@@ -138,6 +173,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80",
         alt: "Incondicionales",
         caption: "Tu aliento y apoyo no faltan nunca.",
+        backNote: "💌 '¡Sos de oro Mamá! Gracias por estar siempre en primera fila.'",
       },
     ],
   },
@@ -149,6 +185,13 @@ const memories = [
     description:
       "Cada paseo, viaje y escapada con vos se convierte en un recuerdo imborrable. ¡Qué lindo es descubrir el mundo acompañados por vos!",
     note: "🌸 Cuarta parada: Salidas, paseos y aventuras inolvidables.",
+    bloom: {
+      stageIcon: "✉️",
+      title: "¡Abrí la postal del viaje!",
+      instruction: "Tocá la postal ✈️ para sellar las aventuras compartidas en el camino.",
+      actionBtn: "✈️ Desplegar Postal",
+      bloomedIcon: "🌸",
+    },
     gallery: [
       {
         type: "image",
@@ -156,6 +199,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
         alt: "Paseos juntos",
         caption: "Nuestras mejores rutas y paisajes compartidos.",
+        backNote: "💌 'El destino no importa cuando la mejor viajera del mundo sos vos.'",
       },
       {
         type: "image",
@@ -163,6 +207,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80",
         alt: "Viajes especiales",
         caption: "Descubriendo nuevos lugares en familia con tu mejor sonrisa.",
+        backNote: "💌 'Coleccionar fotos y momentos a tu lado es nuestro pasatiempo favorito.'",
       },
       {
         type: "image",
@@ -170,6 +215,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
         alt: "Momentos de desconexión",
         caption: "Disfrutando del sol, el aire libre y la buena compañía.",
+        backNote: "💌 'Días al aire libre, mates al sol y risas inolvidables.'",
       },
       {
         type: "image",
@@ -177,6 +223,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80",
         alt: "Fotos inolvidables",
         caption: "Cosas simples que se vuelven gigantes porque estamos juntos.",
+        backNote: "💌 'Cada escapada en familia renueva nuestras energías y unión.'",
       },
       {
         type: "image",
@@ -184,6 +231,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1530789253388-582c481c54b0?auto=format&fit=crop&w=800&q=80",
         alt: "Próximos destinos",
         caption: "¡Y cuántos caminos más nos quedan por recorrer juntos!",
+        backNote: "💌 '¡A preparar las valijas para los próximos destinos juntos!'",
       },
     ],
   },
@@ -195,6 +243,13 @@ const memories = [
     description:
       "El calor de nuestro hogar, los mimos con Rocco, el cuidado de cada detalle y el amor incondicional que recibimos todos los días.",
     note: "🌷 Quinta parada: El calor del hogar y la compañía incondicional.",
+    bloom: {
+      stageIcon: "🏠",
+      title: "¡Entrá al calor del hogar!",
+      instruction: "Tocá la huellita 🐾 de Rocco para abrir la puerta de casa y los recuerdos.",
+      actionBtn: "🐾 Caricia a Rocco",
+      bloomedIcon: "🌷",
+    },
     gallery: [
       {
         type: "image",
@@ -202,6 +257,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80",
         alt: "Compañía especial",
         caption: "Rocco y los mimos que alegran cada día en casa.",
+        backNote: "💌 'Rocco moviendo la cola y vos recibiéndonos con una sonrisa... ¡El mejor recibimiento!'",
       },
       {
         type: "video",
@@ -209,6 +265,7 @@ const memories = [
         fallback: "assets/rocco2.mp4",
         alt: "Video juguetón con Rocco",
         caption: "Momentos divertidos y juegos en el hogar.",
+        backNote: "💌 'Rocco sabe muy bien quién es su favorita en la casa.'",
       },
       {
         type: "image",
@@ -216,6 +273,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80",
         alt: "Rincón de paz",
         caption: "La tranquilidad y ternura de compartir en familia.",
+        backNote: "💌 'La calidez de nuestro hogar es reflejo directo de tu dulzura.'",
       },
       {
         type: "image",
@@ -223,6 +281,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=800&q=80",
         alt: "Amor de hogar",
         caption: "Tu presencia que hace de la casa el lugar más lindo del mundo.",
+        backNote: "💌 'Gracias por cuidar cada detalle con tanto amor y dedicación.'",
       },
       {
         type: "video",
@@ -230,6 +289,7 @@ const memories = [
         fallback: "assets/rocco5.mp4",
         alt: "Video especial en el hogar",
         caption: "Un recuerdo en movimiento lleno de cariño.",
+        backNote: "💌 'Momentos cotidianos que valen oro para el corazón.'",
       },
     ],
   },
@@ -241,6 +301,13 @@ const memories = [
     description:
       "Este recorrido termina uniendo todas las flores en un gran ramo para vos: toda tu familia unida agradeciéndote por ser la mejor Mamá.",
     note: "💖 Última parada: ¡Feliz Día de la Madre!",
+    bloom: {
+      stageIcon: "🎀",
+      title: "¡Atá el gran ramo de la familia!",
+      instruction: "Tocá la cinta rosa 🎀 para unir todas las flores y enviar el gran abrazo familiar.",
+      actionBtn: "🎀 Atar el Ramo Final",
+      bloomedIcon: "💐",
+    },
     gallery: [
       {
         type: "image",
@@ -248,6 +315,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&q=80",
         alt: "Familia unida",
         caption: "Todos nosotros somos felices porque te tenemos con nosotros.",
+        backNote: "💌 'Sos el pilar y el corazón que une a toda esta familia. ¡Te adoramos!'",
       },
       {
         type: "image",
@@ -255,6 +323,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1490578474895-699bc4e2cf59?auto=format&fit=crop&w=800&q=80",
         alt: "Sonrisas compartidas",
         caption: "Tu felicidad es la nuestra.",
+        backNote: "💌 'Verte sonreír y disfrutar es el mejor regalo para todos nosotros.'",
       },
       {
         type: "image",
@@ -262,6 +331,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
         alt: "Abrazo familiar",
         caption: "Gracias por darnos tu vida y tu cariño incondicional.",
+        backNote: "💌 'Un abrazo bien apretado de parte de todos los que te amamos con el alma.'",
       },
       {
         type: "image",
@@ -269,6 +339,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
         alt: "Festejo del Día de la Madre",
         caption: "¡Hoy y siempre te celebramos!",
+        backNote: "💌 '¡Salud por la mejor madre del universo entero! ❤️'",
       },
       {
         type: "image",
@@ -276,6 +347,7 @@ const memories = [
         fallback: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=800&q=80",
         alt: "Te amamos Mamá",
         caption: "¡Te amamos con todo el corazón! ❤️",
+        backNote: "💌 '¡Gracias por existir! Que pases un día hermoso tan radiante como vos.'",
       },
     ],
   },
@@ -322,6 +394,13 @@ const nextMediaBtn = document.getElementById("next-media-btn");
 const memoryGalleryStatus = document.getElementById("memory-gallery-status");
 const memoryNote = document.getElementById("memory-note");
 const completeStopBtn = document.getElementById("complete-stop-btn");
+
+const bloomOverlay = document.getElementById("bloom-overlay");
+const bloomCloseX = document.getElementById("bloom-close-x");
+const bloomStage = document.getElementById("bloom-stage");
+const bloomTitle = document.getElementById("bloom-title");
+const bloomInstruction = document.getElementById("bloom-instruction");
+const bloomActionBtn = document.getElementById("bloom-action-btn");
 
 const finalCard = document.getElementById("final-card");
 const restartBtn = document.getElementById("restart-btn");
@@ -442,6 +521,28 @@ class NatureAudioSynthesizer {
 
       osc.start(now);
       osc.stop(now + 0.22);
+    } catch (e) {}
+  }
+
+  playBloomSound() {
+    this.init();
+    if (!this.ctx) return;
+    try {
+      const now = this.ctx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+        gain.gain.setValueAtTime(0, now + idx * 0.08);
+        gain.gain.linearRampToValueAtTime(0.08, now + idx * 0.08 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.08 + 0.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now + idx * 0.08);
+        osc.stop(now + idx * 0.08 + 0.55);
+      });
     } catch (e) {}
   }
 
@@ -601,7 +702,7 @@ class GardenCanvasEngine {
   walkToStation(targetIndex) {
     if (this.character.isWalking) return;
     if (targetIndex === this.character.currentStationIndex) {
-      openMemory(memories[targetIndex].id);
+      triggerBloomInteraction(memories[targetIndex].id);
       return;
     }
 
@@ -644,7 +745,7 @@ class GardenCanvasEngine {
         this.character.x = toSt.x;
         this.character.y = toSt.y;
 
-        openMemory(memories[nextIndex].id);
+        triggerBloomInteraction(memories[nextIndex].id);
         return;
       }
     }
@@ -1064,11 +1165,58 @@ class GardenCanvasEngine {
 let gardenEngine = null;
 
 // =========================================================
-// RENDERIZADO DE GALERÍA Y DTOs
+// RENDERIZADO DE GALERÍA, POLAROIDS Y BLOOM OVERLAY
 // =========================================================
+function triggerBloomInteraction(memoryId) {
+  const selectedMemory = memories.find((m) => m.id === memoryId);
+  if (!selectedMemory) return;
+
+  activeMemoryId = memoryId;
+  const bloomConfig = selectedMemory.bloom || {
+    stageIcon: selectedMemory.icon || "🌸",
+    title: "¡Hacé florecer este recuerdo!",
+    instruction: "Tocá el botón para abrir las fotos de esta flor.",
+    actionBtn: "🌸 Florecer Parada",
+    bloomedIcon: "💐",
+  };
+
+  if (!bloomOverlay) {
+    openMemory(memoryId);
+    return;
+  }
+
+  bloomStage.textContent = bloomConfig.stageIcon;
+  bloomStage.classList.remove("bloom-stage-pop");
+  bloomTitle.textContent = bloomConfig.title;
+  bloomInstruction.textContent = bloomConfig.instruction;
+  bloomActionBtn.textContent = bloomConfig.actionBtn;
+  bloomActionBtn.disabled = false;
+
+  bloomOverlay.classList.remove("hidden");
+
+  bloomActionBtn.onclick = () => {
+    bloomActionBtn.disabled = true;
+    audioSynth.playBloomSound();
+    bloomStage.textContent = bloomConfig.bloomedIcon;
+    bloomStage.classList.add("bloom-stage-pop");
+
+    setTimeout(() => {
+      bloomOverlay.classList.add("hidden");
+      openMemory(memoryId);
+    }, 700);
+  };
+}
+
 function createImageMedia(mediaItem) {
-  const figure = document.createElement("figure");
-  figure.className = "photo-frame";
+  const card = document.createElement("div");
+  card.className = "polaroid-card";
+
+  const inner = document.createElement("div");
+  inner.className = "polaroid-inner";
+
+  // Frente
+  const front = document.createElement("div");
+  front.className = "polaroid-front";
 
   const image = document.createElement("img");
   image.src = mediaItem.src;
@@ -1080,15 +1228,44 @@ function createImageMedia(mediaItem) {
     }
   });
 
-  figure.appendChild(image);
+  front.appendChild(image);
 
   if (mediaItem.caption) {
-    const caption = document.createElement("figcaption");
-    caption.textContent = mediaItem.caption;
-    figure.appendChild(caption);
+    const caption = document.createElement("div");
+    caption.className = "polaroid-caption";
+    caption.innerHTML = `
+      <span>${mediaItem.caption}</span>
+      <span class="flip-hint">🔄 Toca la foto para ver el mensaje al dorso</span>
+    `;
+    front.appendChild(caption);
   }
 
-  return figure;
+  // Dorso
+  const back = document.createElement("div");
+  back.className = "polaroid-back";
+
+  const backNote = document.createElement("p");
+  backNote.className = "polaroid-back-note";
+  backNote.textContent = mediaItem.backNote || "💌 Un regalo del corazón para la mejor Mamá del mundo.";
+
+  const hintBack = document.createElement("span");
+  hintBack.className = "flip-hint";
+  hintBack.textContent = "🔄 Toca para volver a la foto";
+
+  back.appendChild(backNote);
+  back.appendChild(hintBack);
+
+  inner.appendChild(front);
+  inner.appendChild(back);
+  card.appendChild(inner);
+
+  // Click para dar vuelta en 3D
+  card.addEventListener("click", () => {
+    card.classList.toggle("flipped");
+    audioSynth.playStepSound();
+  });
+
+  return card;
 }
 
 function createVideoMedia(mediaItem) {
@@ -1289,7 +1466,7 @@ function renderTimeline() {
       <span class="timeline-dot">${memory.icon || memory.id}</span>
       <span class="timeline-label">${memory.label}</span>
     `;
-    stopButton.addEventListener("click", () => openMemory(memory.id));
+    stopButton.addEventListener("click", () => triggerBloomInteraction(memory.id));
     timelineBoard.appendChild(stopButton);
 
     if (index < memories.length - 1) {
@@ -1353,7 +1530,7 @@ btnWalkNext.addEventListener("click", () => {
   if (gardenEngine) {
     gardenEngine.walkToStation(nextTargetIndex);
   } else {
-    openMemory(nextTargetIndex + 1);
+    triggerBloomInteraction(nextTargetIndex + 1);
   }
 });
 
@@ -1362,12 +1539,12 @@ btnWalkPrev.addEventListener("click", () => {
   if (gardenEngine) {
     gardenEngine.walkToStation(prevTargetIndex);
   } else {
-    openMemory(prevTargetIndex + 1);
+    triggerBloomInteraction(prevTargetIndex + 1);
   }
 });
 
 btnOpenCurrent.addEventListener("click", () => {
-  openMemory(activeMemoryId);
+  triggerBloomInteraction(activeMemoryId);
 });
 
 prevMediaBtn.addEventListener("click", () => stepGallery(-1));
@@ -1376,6 +1553,7 @@ completeStopBtn.addEventListener("click", continueJourney);
 
 if (modalCloseX) modalCloseX.addEventListener("click", closeMemoryModal);
 if (backToGardenBtn) backToGardenBtn.addEventListener("click", closeMemoryModal);
+if (bloomCloseX) bloomCloseX.addEventListener("click", () => bloomOverlay.classList.add("hidden"));
 
 memoryModal.addEventListener("click", (e) => {
   if (e.target === memoryModal) {
@@ -1383,13 +1561,21 @@ memoryModal.addEventListener("click", (e) => {
   }
 });
 
+if (bloomOverlay) {
+  bloomOverlay.addEventListener("click", (e) => {
+    if (e.target === bloomOverlay) {
+      bloomOverlay.classList.add("hidden");
+    }
+  });
+}
+
 if (restartBtn) {
   restartBtn.addEventListener("click", () => {
     unlockedStops = memories.length;
     activeMemoryId = 1;
     switchView("garden");
     if (gardenEngine) gardenEngine.walkToStation(0);
-    openMemory(1);
+    triggerBloomInteraction(1);
   });
 }
 
