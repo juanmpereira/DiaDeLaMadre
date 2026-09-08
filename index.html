@@ -120,8 +120,23 @@
           <p class="description" id="memory-description"></p>
 
           <div class="memory-gallery-card">
+            <div class="gallery-toolbar">
+              <div class="gallery-view-mode" role="group" aria-label="Modo de galería">
+                <button type="button" class="btn btn-sm btn-ghost active" id="btn-mode-grid">
+                  🖼️ Fotos Lado a Lado (3)
+                </button>
+                <button type="button" class="btn btn-sm btn-ghost" id="btn-mode-slideshow">
+                  🎬 Presentación Automática
+                </button>
+              </div>
+              <div class="slideshow-status hidden" id="slideshow-status">
+                <span class="pulse-dot">⏱️</span> Avanzando en tiempo lento...
+              </div>
+            </div>
+
             <div class="memory-media" id="memory-media"></div>
-            <div class="memory-gallery-nav">
+
+            <div class="memory-gallery-nav" id="memory-gallery-nav">
               <button class="btn btn-ghost" id="prev-media-btn" type="button">Anterior</button>
               <p class="memory-gallery-status" id="memory-gallery-status">1 / 1</p>
               <button class="btn btn-ghost" id="next-media-btn" type="button">Siguiente</button>

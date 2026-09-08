@@ -388,12 +388,17 @@ const memoryStep = document.getElementById("memory-step");
 const memoryTitle = document.getElementById("memory-title");
 const memoryDescription = document.getElementById("memory-description");
 const memoryMedia = document.getElementById("memory-media");
+const memoryGalleryNav = document.getElementById("memory-gallery-nav");
 const memoryThumbnails = document.getElementById("memory-thumbnails");
 const prevMediaBtn = document.getElementById("prev-media-btn");
 const nextMediaBtn = document.getElementById("next-media-btn");
 const memoryGalleryStatus = document.getElementById("memory-gallery-status");
 const memoryNote = document.getElementById("memory-note");
 const completeStopBtn = document.getElementById("complete-stop-btn");
+
+const btnModeGrid = document.getElementById("btn-mode-grid");
+const btnModeSlideshow = document.getElementById("btn-mode-slideshow");
+const slideshowStatus = document.getElementById("slideshow-status");
 
 const bloomOverlay = document.getElementById("bloom-overlay");
 const bloomCloseX = document.getElementById("bloom-close-x");
@@ -583,20 +588,23 @@ class GardenCanvasEngine {
     this.worldWidth = 1400;
     this.worldHeight = 700;
 
-    this.stations = [
-      { id: 1, x: 180, y: 520, name: "Las Semillas", icon: "🌱", color: "#66bb6a" },
-      { id: 2, x: 380, y: 260, name: "El Sol Diario", icon: "🌻", color: "#fbc02d" },
-      { id: 3, x: 600, y: 500, name: "Pasiones", icon: "🌹", color: "#e53935" },
-      { id: 4, x: 820, y: 240, name: "Aventuras", icon: "🌸", color: "#ec407a" },
-      { id: 5, x: 1040, y: 480, name: "El Hogar", icon: "🌷", color: "#ab47bc" },
-      { id: 6, x: 1240, y: 280, name: "El Ramo", icon: "💐", color: "#26a69a" },
+    // Waypoints: 0 es la Entrada del Jardín, 1..6 son las flores/paradas
+    this.waypoints = [
+      { id: 0, x: 70, y: 520, isStation: false, name: "Entrada del Jardín", icon: "🚪" },
+      { id: 1, x: 220, y: 520, isStation: true, name: "Las Semillas", icon: "🌱", color: "#66bb6a" },
+      { id: 2, x: 420, y: 260, isStation: true, name: "El Sol Diario", icon: "🌻", color: "#fbc02d" },
+      { id: 3, x: 640, y: 500, isStation: true, name: "Pasiones", icon: "🌹", color: "#e53935" },
+      { id: 4, x: 860, y: 240, isStation: true, name: "Aventuras", icon: "🌸", color: "#ec407a" },
+      { id: 5, x: 1060, y: 480, isStation: true, name: "El Hogar", icon: "🌷", color: "#ab47bc" },
+      { id: 6, x: 1260, y: 280, isStation: true, name: "El Ramo", icon: "💐", color: "#26a69a" },
     ];
 
+    // Personaje arranca en la Entrada (Waypoint 0)
     this.character = {
-      x: this.stations[0].x,
-      y: this.stations[0].y,
-      currentStationIndex: 0,
-      targetStationIndex: 0,
+      x: this.waypoints[0].x,
+      y: this.waypoints[0].y,
+      currentWaypointIndex: 0,
+      targetWaypointIndex: 0,
       isWalking: false,
       progress: 0,
       facingLeft: false,
@@ -661,18 +669,40 @@ class GardenCanvasEngine {
   bindEvents() {
     window.addEventListener("resize", () => this.resize());
 
+    const handlePointerMove = (e) => {
+      const rect = this.canvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+      const worldPos = this.screenToWorld(clickX, clickY);
+
+      let isHoveringStation = false;
+      this.waypoints.forEach((wp) => {
+        if (!wp.isStation) return;
+        const dist = Math.hypot(wp.x - worldPos.x, wp.y - worldPos.y);
+        if (dist < 55) {
+          if (wp.id <= unlockedStops) {
+            isHoveringStation = true;
+          }
+        }
+      });
+
+      this.canvas.style.cursor = isHoveringStation ? "pointer" : "grab";
+    };
+
+    this.canvas.addEventListener("mousemove", handlePointerMove);
+
     this.canvas.addEventListener("click", (e) => {
       const rect = this.canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
-
       const worldPos = this.screenToWorld(clickX, clickY);
 
-      this.stations.forEach((st, index) => {
-        const dist = Math.hypot(st.x - worldPos.x, st.y - worldPos.y);
-        if (dist < 48) {
-          if (index < unlockedStops) {
-            this.walkToStation(index);
+      this.waypoints.forEach((wp) => {
+        if (!wp.isStation) return;
+        const dist = Math.hypot(wp.x - worldPos.x, wp.y - worldPos.y);
+        if (dist < 55) {
+          if (wp.id <= unlockedStops) {
+            this.walkToWaypoint(wp.id);
           }
         }
       });
@@ -684,7 +714,7 @@ class GardenCanvasEngine {
     const scale = this.getScale();
     return {
       x: screenX / scale + cameraX,
-      y: (screenY / scale) * (this.worldHeight / this.viewportHeight),
+      y: screenY / scale,
     };
   }
 
@@ -699,21 +729,23 @@ class GardenCanvasEngine {
     return Math.max(0, Math.min(targetCamX, Math.max(0, maxCamX)));
   }
 
-  walkToStation(targetIndex) {
+  walkToWaypoint(targetWaypointIndex) {
     if (this.character.isWalking) return;
-    if (targetIndex === this.character.currentStationIndex) {
-      triggerBloomInteraction(memories[targetIndex].id);
+    if (targetWaypointIndex === this.character.currentWaypointIndex) {
+      if (targetWaypointIndex > 0) {
+        triggerBloomInteraction(targetWaypointIndex);
+      }
       return;
     }
 
-    this.character.targetStationIndex = targetIndex;
+    this.character.targetWaypointIndex = targetWaypointIndex;
     this.character.isWalking = true;
   }
 
   updateCharacter() {
     if (!this.character.isWalking) return;
 
-    const dir = this.character.targetStationIndex > this.character.currentStationIndex ? 1 : -1;
+    const dir = this.character.targetWaypointIndex > this.character.currentWaypointIndex ? 1 : -1;
     this.character.facingLeft = dir < 0;
 
     this.character.progress += 0.012;
@@ -735,23 +767,29 @@ class GardenCanvasEngine {
     }
 
     if (this.character.progress >= 1) {
-      const nextIndex = this.character.currentStationIndex + dir;
-      this.character.currentStationIndex = nextIndex;
+      const nextIndex = this.character.currentWaypointIndex + dir;
+      this.character.currentWaypointIndex = nextIndex;
       this.character.progress = 0;
 
-      if (nextIndex === this.character.targetStationIndex) {
+      if (nextIndex === this.character.targetWaypointIndex) {
         this.character.isWalking = false;
-        const toSt = this.stations[this.character.targetStationIndex];
-        this.character.x = toSt.x;
-        this.character.y = toSt.y;
+        const toWp = this.waypoints[this.character.targetWaypointIndex];
+        this.character.x = toWp.x;
+        this.character.y = toWp.y;
 
-        triggerBloomInteraction(memories[nextIndex].id);
+        if (nextIndex > 0) {
+          activeMemoryId = nextIndex;
+          updateTopProgress();
+          triggerBloomInteraction(nextIndex);
+        } else {
+          updateTopProgress();
+        }
         return;
       }
     }
 
-    const curStart = this.stations[this.character.currentStationIndex];
-    const curEnd = this.stations[this.character.currentStationIndex + dir];
+    const curStart = this.waypoints[this.character.currentWaypointIndex];
+    const curEnd = this.waypoints[this.character.currentWaypointIndex + dir];
 
     const t = this.character.progress;
     const smoothT = t * t * (3 - 2 * t);
@@ -888,14 +926,14 @@ class GardenCanvasEngine {
     this.ctx.save();
 
     this.ctx.beginPath();
-    this.ctx.moveTo(this.stations[0].x, this.stations[0].y + 4);
-    for (let i = 0; i < this.stations.length - 1; i++) {
-      const p1 = this.stations[i];
-      const p2 = this.stations[i + 1];
+    this.ctx.moveTo(this.waypoints[0].x, this.waypoints[0].y + 4);
+    for (let i = 0; i < this.waypoints.length - 1; i++) {
+      const p1 = this.waypoints[i];
+      const p2 = this.waypoints[i + 1];
       const midX = (p1.x + p2.x) / 2;
       this.ctx.quadraticCurveTo(p1.x, p1.y + 4, midX, (p1.y + p2.y) / 2 + 4);
     }
-    const lastSt = this.stations[this.stations.length - 1];
+    const lastSt = this.waypoints[this.waypoints.length - 1];
     this.ctx.lineTo(lastSt.x, lastSt.y + 4);
     this.ctx.strokeStyle = "rgba(20, 40, 10, 0.35)";
     this.ctx.lineWidth = 42;
@@ -904,10 +942,10 @@ class GardenCanvasEngine {
     this.ctx.stroke();
 
     this.ctx.beginPath();
-    this.ctx.moveTo(this.stations[0].x, this.stations[0].y);
-    for (let i = 0; i < this.stations.length - 1; i++) {
-      const p1 = this.stations[i];
-      const p2 = this.stations[i + 1];
+    this.ctx.moveTo(this.waypoints[0].x, this.waypoints[0].y);
+    for (let i = 0; i < this.waypoints.length - 1; i++) {
+      const p1 = this.waypoints[i];
+      const p2 = this.waypoints[i + 1];
       const midX = (p1.x + p2.x) / 2;
       this.ctx.quadraticCurveTo(p1.x, p1.y, midX, (p1.y + p2.y) / 2);
     }
@@ -916,9 +954,9 @@ class GardenCanvasEngine {
     this.ctx.lineWidth = 36;
     this.ctx.stroke();
 
-    for (let i = 0; i < this.stations.length - 1; i++) {
-      const p1 = this.stations[i];
-      const p2 = this.stations[i + 1];
+    for (let i = 0; i < this.waypoints.length - 1; i++) {
+      const p1 = this.waypoints[i];
+      const p2 = this.waypoints[i + 1];
       const steps = 18;
       for (let s = 0; s <= steps; s++) {
         const t = s / steps;
@@ -936,10 +974,11 @@ class GardenCanvasEngine {
   }
 
   drawGardenDecor() {
-    const entryX = 80;
+    const entryX = 70;
     const entryY = 520;
 
     this.ctx.save();
+    // Portal de Entrada
     this.ctx.fillStyle = "#8d6e63";
     this.ctx.fillRect(entryX - 16, entryY - 60, 6, 60);
     this.ctx.fillRect(entryX + 16, entryY - 60, 6, 60);
@@ -960,12 +999,26 @@ class GardenCanvasEngine {
       this.ctx.fill();
     }
 
+    // Cartel de Entrada
+    this.ctx.fillStyle = "#fff8e1";
+    this.ctx.strokeStyle = "#8d6e63";
+    this.ctx.lineWidth = 1.5;
+    this.ctx.beginPath();
+    this.ctx.roundRect ? this.ctx.roundRect(entryX - 35, entryY - 95, 70, 20, 8) : this.ctx.rect(entryX - 35, entryY - 95, 70, 20);
+    this.ctx.fill();
+    this.ctx.stroke();
+
+    this.ctx.fillStyle = "#5d4037";
+    this.ctx.font = "bold 10px 'Nunito', sans-serif";
+    this.ctx.textAlign = "center";
+    this.ctx.fillText("ENTRADA 🌸", entryX, -81);
+
     const treePositions = [
-      { x: 280, y: 120, color: "#f8bbd0" },
-      { x: 500, y: 620, color: "#81c784" },
-      { x: 720, y: 110, color: "#f8bbd0" },
-      { x: 940, y: 610, color: "#81c784" },
-      { x: 1160, y: 120, color: "#f8bbd0" },
+      { x: 300, y: 120, color: "#f8bbd0" },
+      { x: 520, y: 620, color: "#81c784" },
+      { x: 740, y: 110, color: "#f8bbd0" },
+      { x: 960, y: 610, color: "#81c784" },
+      { x: 1180, y: 120, color: "#f8bbd0" },
     ];
 
     treePositions.forEach((tree) => {
@@ -984,13 +1037,16 @@ class GardenCanvasEngine {
   }
 
   drawStations() {
-    this.stations.forEach((st, index) => {
-      const isUnlocked = index < unlockedStops;
-      const isCompleted = index + 1 < unlockedStops;
-      const isCurrent = index === this.character.currentStationIndex;
+    this.waypoints.forEach((wp) => {
+      if (!wp.isStation) return;
+      const index = wp.id; // 1..6
+
+      const isUnlocked = index <= unlockedStops;
+      const isCompleted = index < unlockedStops;
+      const isCurrent = index === this.character.currentWaypointIndex;
 
       this.ctx.save();
-      this.ctx.translate(st.x, st.y);
+      this.ctx.translate(wp.x, wp.y);
 
       this.ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
       this.ctx.beginPath();
@@ -1018,13 +1074,13 @@ class GardenCanvasEngine {
       this.ctx.font = "20px 'Segoe UI Emoji', sans-serif";
       this.ctx.textAlign = "center";
       this.ctx.textBaseline = "middle";
-      this.ctx.fillText(st.icon, 0, 1);
+      this.ctx.fillText(wp.icon, 0, 1);
 
       this.ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
       this.ctx.strokeStyle = "#d86a82";
       this.ctx.lineWidth = 1.5;
 
-      const labelText = `${st.id}. ${st.name}`;
+      const labelText = `${wp.id}. ${wp.name}`;
       this.ctx.font = "bold 12px 'Nunito', sans-serif";
       const textWidth = this.ctx.measureText(labelText).width;
 
@@ -1322,6 +1378,30 @@ function getActiveMemory() {
   return memories.find((memory) => memory.id === activeMemoryId);
 }
 
+let galleryDisplayMode = "grid"; // "grid" (lado a lado) o "slideshow" (avanza en tiempo lento)
+let slideshowInterval = null;
+
+function stopSlideshowTimer() {
+  if (slideshowInterval) {
+    clearInterval(slideshowInterval);
+    slideshowInterval = null;
+  }
+}
+
+function startSlideshowTimer() {
+  stopSlideshowTimer();
+  slideshowInterval = setInterval(() => {
+    const memory = getActiveMemory();
+    if (!memory) return;
+    if (activeGalleryIndex < memory.gallery.length - 1) {
+      activeGalleryIndex++;
+    } else {
+      activeGalleryIndex = 0;
+    }
+    renderMemoryMedia(memory);
+  }, 4200);
+}
+
 function renderGalleryThumbnails(memory) {
   memoryThumbnails.innerHTML = "";
 
@@ -1350,12 +1430,43 @@ function renderGalleryThumbnails(memory) {
 
 function renderMemoryMedia(memory) {
   memoryMedia.innerHTML = "";
-  const mediaItem = memory.gallery[activeGalleryIndex];
-  const inferredType = inferMediaType(mediaItem);
-  const mediaElement = inferredType === "video" ? createVideoMedia(mediaItem) : createImageMedia(mediaItem);
-  memoryMedia.appendChild(mediaElement);
-  renderGalleryThumbnails(memory);
-  updateGalleryControls(memory);
+
+  if (galleryDisplayMode === "grid") {
+    stopSlideshowTimer();
+    if (btnModeGrid) btnModeGrid.classList.add("active");
+    if (btnModeSlideshow) btnModeSlideshow.classList.remove("active");
+    if (slideshowStatus) slideshowStatus.classList.add("hidden");
+    if (memoryGalleryNav) memoryGalleryNav.classList.add("hidden");
+    if (memoryThumbnails) memoryThumbnails.classList.add("hidden");
+
+    const gridContainer = document.createElement("div");
+    gridContainer.className = "polaroid-grid";
+
+    memory.gallery.forEach((mediaItem) => {
+      const inferredType = inferMediaType(mediaItem);
+      const mediaElement = inferredType === "video" ? createVideoMedia(mediaItem) : createImageMedia(mediaItem);
+      gridContainer.appendChild(mediaElement);
+    });
+
+    memoryMedia.appendChild(gridContainer);
+  } else {
+    if (btnModeSlideshow) btnModeSlideshow.classList.add("active");
+    if (btnModeGrid) btnModeGrid.classList.remove("active");
+    if (slideshowStatus) slideshowStatus.classList.remove("hidden");
+    if (memoryGalleryNav) memoryGalleryNav.classList.remove("hidden");
+    if (memoryThumbnails) memoryThumbnails.classList.remove("hidden");
+
+    const mediaItem = memory.gallery[activeGalleryIndex];
+    const inferredType = inferMediaType(mediaItem);
+    const mediaElement = inferredType === "video" ? createVideoMedia(mediaItem) : createImageMedia(mediaItem);
+    memoryMedia.appendChild(mediaElement);
+    renderGalleryThumbnails(memory);
+    updateGalleryControls(memory);
+
+    if (!slideshowInterval) {
+      startSlideshowTimer();
+    }
+  }
 }
 
 function updateGalleryControls(memory) {
@@ -1371,11 +1482,43 @@ function updateGalleryControls(memory) {
 }
 
 function updateTopProgress() {
-  topProgressBadge.textContent = `🌸 ${activeMemoryId} / ${memories.length}`;
-  timelineProgress.textContent = `Flor ${activeMemoryId} de ${memories.length}`;
+  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : activeMemoryId;
 
-  if (btnWalkPrev) btnWalkPrev.disabled = activeMemoryId <= 1;
-  if (btnWalkNext) btnWalkNext.disabled = activeMemoryId >= memories.length && unlockedStops < memories.length;
+  if (curWp === 0) {
+    topProgressBadge.textContent = "🌸 Entrada del Jardín";
+    if (timelineProgress) timelineProgress.textContent = "Entrada al Jardín de Recuerdos";
+
+    if (btnWalkPrev) {
+      btnWalkPrev.disabled = true;
+      btnWalkPrev.textContent = "⬅️ En la Entrada";
+    }
+    if (btnWalkNext) {
+      btnWalkNext.disabled = false;
+      btnWalkNext.textContent = `🚶‍♂️ Avanzar a Flor 1 (${memories[0].label}) →`;
+    }
+    if (btnOpenCurrent) {
+      btnOpenCurrent.textContent = `🌸 Entrar a Flor 1 (${memories[0].label})`;
+    }
+  } else {
+    activeMemoryId = curWp;
+    topProgressBadge.textContent = `🌸 ${curWp} / ${memories.length}`;
+    if (timelineProgress) timelineProgress.textContent = `Flor ${curWp} de ${memories.length}`;
+
+    if (btnWalkPrev) {
+      btnWalkPrev.disabled = false;
+      btnWalkPrev.textContent = curWp === 1 ? "⬅️ Volver a la Entrada" : `⬅️ Flor ${curWp - 1} (${memories[curWp - 2].label})`;
+    }
+    if (btnWalkNext) {
+      const isLast = curWp >= memories.length;
+      btnWalkNext.disabled = isLast || unlockedStops < curWp + 1;
+      btnWalkNext.textContent = isLast
+        ? "✨ ¡Llegaste al Ramo Final!"
+        : `🚶‍♂️ Caminar a Flor ${curWp + 1} (${memories[curWp].label}) →`;
+    }
+    if (btnOpenCurrent) {
+      btnOpenCurrent.textContent = `📸 Ver Fotos de Flor ${curWp}`;
+    }
+  }
 }
 
 function openMemory(memoryId) {
@@ -1397,6 +1540,7 @@ function openMemory(memoryId) {
 }
 
 function closeMemoryModal() {
+  stopSlideshowTimer();
   memoryModal.classList.add("hidden");
 }
 
@@ -1412,11 +1556,11 @@ function continueJourney() {
     closeMemoryModal();
 
     if (activeMemoryId < memories.length) {
-      const nextIndex = activeMemoryId;
+      const nextIndex = activeMemoryId + 1;
       if (gardenEngine) {
-        gardenEngine.walkToStation(nextIndex);
+        gardenEngine.walkToWaypoint(nextIndex);
       } else {
-        openMemory(activeMemoryId + 1);
+        triggerBloomInteraction(nextIndex);
       }
     } else {
       gardenSection.classList.add("hidden");
@@ -1525,31 +1669,56 @@ btnAudioToggle.addEventListener("click", () => {
 });
 
 btnWalkNext.addEventListener("click", () => {
-  const nextTargetIndex = Math.min(memories.length - 1, activeMemoryId);
-  unlockedStops = Math.max(unlockedStops, nextTargetIndex + 1);
-  if (gardenEngine) {
-    gardenEngine.walkToStation(nextTargetIndex);
-  } else {
-    triggerBloomInteraction(nextTargetIndex + 1);
+  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : 0;
+  const nextTargetIndex = curWp + 1;
+  if (nextTargetIndex <= memories.length) {
+    unlockedStops = Math.max(unlockedStops, nextTargetIndex);
+    if (gardenEngine) {
+      gardenEngine.walkToWaypoint(nextTargetIndex);
+    } else {
+      triggerBloomInteraction(nextTargetIndex);
+    }
   }
 });
 
 btnWalkPrev.addEventListener("click", () => {
-  const prevTargetIndex = Math.max(0, activeMemoryId - 2);
+  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : 1;
+  const prevTargetIndex = Math.max(0, curWp - 1);
   if (gardenEngine) {
-    gardenEngine.walkToStation(prevTargetIndex);
+    gardenEngine.walkToWaypoint(prevTargetIndex);
   } else {
-    triggerBloomInteraction(prevTargetIndex + 1);
+    if (prevTargetIndex > 0) triggerBloomInteraction(prevTargetIndex);
   }
 });
 
 btnOpenCurrent.addEventListener("click", () => {
-  triggerBloomInteraction(activeMemoryId);
+  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : activeMemoryId;
+  const targetId = curWp === 0 ? 1 : curWp;
+  if (gardenEngine && curWp === 0) {
+    gardenEngine.walkToWaypoint(1);
+  } else {
+    triggerBloomInteraction(targetId);
+  }
 });
 
 prevMediaBtn.addEventListener("click", () => stepGallery(-1));
 nextMediaBtn.addEventListener("click", () => stepGallery(1));
 completeStopBtn.addEventListener("click", continueJourney);
+
+if (btnModeGrid) {
+  btnModeGrid.addEventListener("click", () => {
+    galleryDisplayMode = "grid";
+    renderMemoryMedia(getActiveMemory());
+  });
+}
+
+if (btnModeSlideshow) {
+  btnModeSlideshow.addEventListener("click", () => {
+    galleryDisplayMode = "slideshow";
+    activeGalleryIndex = 0;
+    renderMemoryMedia(getActiveMemory());
+  });
+}
 
 if (modalCloseX) modalCloseX.addEventListener("click", closeMemoryModal);
 if (backToGardenBtn) backToGardenBtn.addEventListener("click", closeMemoryModal);
@@ -1571,11 +1740,17 @@ if (bloomOverlay) {
 
 if (restartBtn) {
   restartBtn.addEventListener("click", () => {
-    unlockedStops = memories.length;
+    unlockedStops = 1;
     activeMemoryId = 1;
     switchView("garden");
-    if (gardenEngine) gardenEngine.walkToStation(0);
-    triggerBloomInteraction(1);
+    if (gardenEngine) {
+      gardenEngine.character.currentWaypointIndex = 0;
+      gardenEngine.character.targetWaypointIndex = 0;
+      gardenEngine.character.x = gardenEngine.waypoints[0].x;
+      gardenEngine.character.y = gardenEngine.waypoints[0].y;
+      gardenEngine.character.isWalking = false;
+    }
+    updateTopProgress();
   });
 }
 
@@ -1584,4 +1759,5 @@ createPetals();
 renderTimeline();
 if (gardenCanvas) {
   gardenEngine = new GardenCanvasEngine(gardenCanvas);
+  updateTopProgress();
 }
