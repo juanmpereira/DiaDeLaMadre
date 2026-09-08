@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>El Jardín de Recuerdos - Feliz Día de la Madre 🌸</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Nunito:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Capas de fondo decorativas -->
+    <div class="bg-shape shape-1" aria-hidden="true"></div>
+    <div class="bg-shape shape-2" aria-hidden="true"></div>
+    <div class="bg-shape shape-3" aria-hidden="true"></div>
+    <div class="petals-container" id="petals-container" aria-hidden="true"></div>
+
+    <main class="app">
+      <!-- Tarjeta Principal: El Jardín / Camino -->
+      <section class="card" id="timeline-card">
+        <div class="card-header-badge">
+          <span class="badge-icon">💐</span>
+          <span class="badge-text">Para la mejor mamá del mundo</span>
+        </div>
+        <p class="step" id="timeline-progress">Flor 1 de 6</p>
+        <h1 class="title">El Jardín de Nuestros Recuerdos 🌸</h1>
+        <p class="description" id="timeline-intro">
+          Cada momento compartido con vos es una flor que floreció en nuestras vidas. 
+          Explorá cada parada para desbloquear fotos, videos y recuerdos inolvidables.
+        </p>
+
+        <section class="timeline-board" id="timeline-board" aria-label="Jardín de recuerdos"></section>
+      </section>
+
+      <!-- Tarjeta de Recuerdo / Foto individual -->
+      <section class="card hidden" id="memory-card">
+        <div class="memory-card-header">
+          <button class="btn btn-outline btn-sm" id="back-to-garden-btn" type="button">
+            ← Volver al Jardín
+          </button>
+          <span class="step" id="memory-step">Recuerdo 1 de 6</span>
+        </div>
+
+        <h2 class="title" id="memory-title"></h2>
+        <p class="description" id="memory-description"></p>
+
+        <div class="memory-gallery-card">
+          <div class="memory-media" id="memory-media"></div>
+          <div class="memory-gallery-nav">
+            <button class="btn btn-ghost" id="prev-media-btn" type="button">Anterior</button>
+            <p class="memory-gallery-status" id="memory-gallery-status">1 / 1</p>
+            <button class="btn btn-ghost" id="next-media-btn" type="button">Siguiente</button>
+          </div>
+          <div class="memory-thumbnails" id="memory-thumbnails"></div>
+        </div>
+
+        <p class="memory-note" id="memory-note"></p>
+
+        <div class="actions">
+          <button class="btn btn-primary" id="complete-stop-btn">Seguir en el Jardín →</button>
+        </div>
+      </section>
+
+      <!-- Tarjeta Final: Gran Ramo de Flores y Mensaje Especial -->
+      <section class="card hidden" id="final-card">
+        <div class="final-badge">✨ ¡Jardín Completo! ✨</div>
+        <h2 class="title final-title">¡Feliz Día de la Madre! 💖</h2>
+        <div class="final-flower-illustration">💐🌻🌹🌸🌷</div>
+        <p class="description final-message">
+          Gracias por cada sonrisa, por tus abrazos curativos, por tus consejos sabios y por darnos siempre tu amor incondicional.
+          ¡Sos el motor y la luz de nuestra familia!
+        </p>
+        <div class="final-actions">
+          <button class="btn btn-primary" id="restart-btn" type="button">
+            🌸 Revivir el Jardín de Recuerdos
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
