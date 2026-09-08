@@ -50,7 +50,7 @@
         <div class="garden-header">
           <h1 class="title garden-main-title">El Jardín de Nuestros Recuerdos 🌸</h1>
           <p class="description garden-subtitle">
-            Recorré el césped y las flores. Hacé clic en cualquier flor o usá los botones para avanzar por el camino de recuerdos.
+            Tocá cualquier flor en el camino para que el personaje camine hasta ella y descubrir sus recuerdos.
           </p>
         </div>
 
@@ -58,21 +58,8 @@
         <div class="garden-canvas-wrapper" id="canvas-wrapper">
           <canvas id="garden-canvas"></canvas>
           <div class="canvas-hint" id="canvas-hint">
-            <span>🌸 Toca cualquier flor para caminar hasta ella</span>
+            <span>🌸 Toca la flor en el camino para caminar hasta ella</span>
           </div>
-        </div>
-
-        <!-- Controles de caminata del jardín -->
-        <div class="garden-controls">
-          <button class="btn btn-ghost" id="btn-walk-prev" type="button">
-            ⬅️ Flor Anterior
-          </button>
-          <button class="btn btn-primary btn-walk" id="btn-walk-next" type="button">
-            🚶‍♂️ Caminar a la Siguiente Flor →
-          </button>
-          <button class="btn btn-outline" id="btn-open-current" type="button">
-            📸 Ver Fotos de esta Flor
-          </button>
         </div>
       </section>
 
@@ -91,20 +78,23 @@
         <section class="timeline-board" id="timeline-board" aria-label="Jardín de recuerdos"></section>
       </section>
 
-      <!-- OVERLAY INTERACTIVO: DESAFÍO Y EFECTO BROTE/FLORECER -->
+      <!-- OVERLAY INTERACTIVO: MINI-JUEGO FLORECER -->
       <div class="modal-backdrop hidden" id="bloom-overlay">
         <div class="bloom-box">
           <button class="modal-close-btn" id="bloom-close-x" type="button" title="Cerrar">&times;</button>
-          <div class="bloom-icon-stage" id="bloom-stage">🌱</div>
           <h2 class="bloom-title" id="bloom-title">¡Hacé florecer este recuerdo!</h2>
-          <p class="bloom-instruction" id="bloom-instruction">Hacé clic en el botón para regar el brote y abrir las fotos 🚿</p>
-          <button type="button" class="btn btn-primary bloom-action-btn" id="bloom-action-btn">
-            🚿 Regar la Flor
-          </button>
+          <p class="bloom-instruction" id="bloom-instruction">Tocá los elementos para abrir la flor.</p>
+          
+          <div class="bloom-interactive-area" id="bloom-interactive-area"></div>
+          
+          <div class="bloom-progress-bar-wrap">
+            <div class="bloom-progress-fill" id="bloom-progress-fill"></div>
+          </div>
+          <span class="bloom-progress-text" id="bloom-progress-text">0 / 3</span>
         </div>
       </div>
 
-      <!-- MODAL DE RECUERDOS (FOTOS / VIDEOS POLAROID) -->
+      <!-- MODAL DE RECUERDOS (FOTOS LADO A LADO POLAROID) -->
       <div class="modal-backdrop hidden" id="memory-modal">
         <section class="card memory-modal-card" id="memory-card">
           <button class="modal-close-btn" id="modal-close-x" type="button" title="Cerrar modal">&times;</button>
@@ -120,35 +110,10 @@
           <p class="description" id="memory-description"></p>
 
           <div class="memory-gallery-card">
-            <div class="gallery-toolbar">
-              <div class="gallery-view-mode" role="group" aria-label="Modo de galería">
-                <button type="button" class="btn btn-sm btn-ghost active" id="btn-mode-grid">
-                  🖼️ Fotos Lado a Lado (3)
-                </button>
-                <button type="button" class="btn btn-sm btn-ghost" id="btn-mode-slideshow">
-                  🎬 Presentación Automática
-                </button>
-              </div>
-              <div class="slideshow-status hidden" id="slideshow-status">
-                <span class="pulse-dot">⏱️</span> Avanzando en tiempo lento...
-              </div>
-            </div>
-
             <div class="memory-media" id="memory-media"></div>
-
-            <div class="memory-gallery-nav" id="memory-gallery-nav">
-              <button class="btn btn-ghost" id="prev-media-btn" type="button">Anterior</button>
-              <p class="memory-gallery-status" id="memory-gallery-status">1 / 1</p>
-              <button class="btn btn-ghost" id="next-media-btn" type="button">Siguiente</button>
-            </div>
-            <div class="memory-thumbnails" id="memory-thumbnails"></div>
           </div>
 
           <p class="memory-note" id="memory-note"></p>
-
-          <div class="actions">
-            <button class="btn btn-primary" id="complete-stop-btn">Seguir Caminando →</button>
-          </div>
         </section>
       </div>
 

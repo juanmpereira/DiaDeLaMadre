@@ -372,9 +372,6 @@ const topProgressBadge = document.getElementById("top-progress-badge");
 const gardenSection = document.getElementById("garden-section");
 const gardenCanvas = document.getElementById("garden-canvas");
 const canvasWrapper = document.getElementById("canvas-wrapper");
-const btnWalkPrev = document.getElementById("btn-walk-prev");
-const btnWalkNext = document.getElementById("btn-walk-next");
-const btnOpenCurrent = document.getElementById("btn-open-current");
 
 const timelineCard = document.getElementById("timeline-card");
 const timelineBoard = document.getElementById("timeline-board");
@@ -388,24 +385,15 @@ const memoryStep = document.getElementById("memory-step");
 const memoryTitle = document.getElementById("memory-title");
 const memoryDescription = document.getElementById("memory-description");
 const memoryMedia = document.getElementById("memory-media");
-const memoryGalleryNav = document.getElementById("memory-gallery-nav");
-const memoryThumbnails = document.getElementById("memory-thumbnails");
-const prevMediaBtn = document.getElementById("prev-media-btn");
-const nextMediaBtn = document.getElementById("next-media-btn");
-const memoryGalleryStatus = document.getElementById("memory-gallery-status");
 const memoryNote = document.getElementById("memory-note");
-const completeStopBtn = document.getElementById("complete-stop-btn");
-
-const btnModeGrid = document.getElementById("btn-mode-grid");
-const btnModeSlideshow = document.getElementById("btn-mode-slideshow");
-const slideshowStatus = document.getElementById("slideshow-status");
 
 const bloomOverlay = document.getElementById("bloom-overlay");
 const bloomCloseX = document.getElementById("bloom-close-x");
-const bloomStage = document.getElementById("bloom-stage");
 const bloomTitle = document.getElementById("bloom-title");
 const bloomInstruction = document.getElementById("bloom-instruction");
-const bloomActionBtn = document.getElementById("bloom-action-btn");
+const bloomInteractiveArea = document.getElementById("bloom-interactive-area");
+const bloomProgressFill = document.getElementById("bloom-progress-fill");
+const bloomProgressText = document.getElementById("bloom-progress-text");
 
 const finalCard = document.getElementById("final-card");
 const restartBtn = document.getElementById("restart-btn");
@@ -676,11 +664,14 @@ class GardenCanvasEngine {
       const worldPos = this.screenToWorld(clickX, clickY);
 
       let isHoveringStation = false;
+      const curIndex = this.character.currentWaypointIndex;
+
       this.waypoints.forEach((wp) => {
         if (!wp.isStation) return;
         const dist = Math.hypot(wp.x - worldPos.x, wp.y - worldPos.y);
-        if (dist < 55) {
-          if (wp.id <= unlockedStops) {
+        if (dist < 60) {
+          const isAccessible = wp.id <= unlockedStops || wp.id === curIndex + 1 || wp.id === curIndex - 1 || (curIndex === 0 && wp.id === 1);
+          if (isAccessible) {
             isHoveringStation = true;
           }
         }
@@ -689,24 +680,34 @@ class GardenCanvasEngine {
       this.canvas.style.cursor = isHoveringStation ? "pointer" : "grab";
     };
 
-    this.canvas.addEventListener("mousemove", handlePointerMove);
-
-    this.canvas.addEventListener("click", (e) => {
+    const handleCanvasClick = (e) => {
       const rect = this.canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
       const worldPos = this.screenToWorld(clickX, clickY);
+      const curIndex = this.character.currentWaypointIndex;
 
       this.waypoints.forEach((wp) => {
         if (!wp.isStation) return;
         const dist = Math.hypot(wp.x - worldPos.x, wp.y - worldPos.y);
-        if (dist < 55) {
-          if (wp.id <= unlockedStops) {
+        if (dist < 60) {
+          const isAccessible = wp.id <= unlockedStops || wp.id === curIndex + 1 || wp.id === curIndex - 1 || (curIndex === 0 && wp.id === 1);
+          if (isAccessible) {
+            unlockedStops = Math.max(unlockedStops, wp.id);
             this.walkToWaypoint(wp.id);
           }
         }
       });
-    });
+    };
+
+    this.canvas.addEventListener("mousemove", handlePointerMove);
+    this.canvas.addEventListener("click", handleCanvasClick);
+    this.canvas.addEventListener("touchstart", (e) => {
+      if (e.touches && e.touches.length > 0) {
+        const touch = e.touches[0];
+        handleCanvasClick({ clientX: touch.clientX, clientY: touch.clientY });
+      }
+    }, { passive: true });
   }
 
   screenToWorld(screenX, screenY) {
@@ -1228,39 +1229,253 @@ function triggerBloomInteraction(memoryId) {
   if (!selectedMemory) return;
 
   activeMemoryId = memoryId;
-  const bloomConfig = selectedMemory.bloom || {
-    stageIcon: selectedMemory.icon || "🌸",
-    title: "¡Hacé florecer este recuerdo!",
-    instruction: "Tocá el botón para abrir las fotos de esta flor.",
-    actionBtn: "🌸 Florecer Parada",
-    bloomedIcon: "💐",
+  let clickCount = 0;
+  const targetClicks = 3;
+
+  const updateProgress = () => {
+    const pct = Math.min(100, Math.round((clickCount / targetClicks) * 100));
+    if (bloomProgressFill) bloomProgressFill.style.width = `${pct}%`;
+    if (bloomProgressText) bloomProgressText.textContent = `${clickCount} / ${targetClicks}`;
   };
 
-  if (!bloomOverlay) {
+  const handleBloomComplete = () => {
+    audioSynth.playBloomSound();
+    setTimeout(() => {
+      bloomOverlay.classList.add("hidden");
+      openMemory(memoryId);
+    }, 550);
+  };
+
+  if (!bloomInteractiveArea) {
     openMemory(memoryId);
     return;
   }
 
-  bloomStage.textContent = bloomConfig.stageIcon;
-  bloomStage.classList.remove("bloom-stage-pop");
-  bloomTitle.textContent = bloomConfig.title;
-  bloomInstruction.textContent = bloomConfig.instruction;
-  bloomActionBtn.textContent = bloomConfig.actionBtn;
-  bloomActionBtn.disabled = false;
+  bloomInteractiveArea.innerHTML = "";
+  clickCount = 0;
+  updateProgress();
+
+  if (memoryId === 1) {
+    bloomTitle.textContent = "¡Regá el brote para hacerlo florecer!";
+    bloomInstruction.textContent = "Tocá 3 veces la regadera 🚿 o el brote 🌱 para darle agua.";
+
+    const centerStage = document.createElement("div");
+    centerStage.className = "bloom-stage-center";
+    centerStage.textContent = "🌱";
+
+    const canBtn = document.createElement("button");
+    canBtn.type = "button";
+    canBtn.className = "bloom-target-item";
+    canBtn.innerHTML = `<span>🚿</span><span class="bloom-target-label">Regar</span>`;
+
+    canBtn.onclick = () => {
+      clickCount++;
+      audioSynth.playStepSound();
+      updateProgress();
+
+      if (clickCount === 1) centerStage.textContent = "🌿";
+      else if (clickCount === 2) centerStage.textContent = "🌸";
+      else if (clickCount >= 3) {
+        centerStage.textContent = "🌺";
+        centerStage.classList.add("bloom-stage-pop");
+        handleBloomComplete();
+      }
+    };
+
+    bloomInteractiveArea.appendChild(centerStage);
+    bloomInteractiveArea.appendChild(canBtn);
+
+  } else if (memoryId === 2) {
+    bloomTitle.textContent = "¡Encendé el sol radiante!";
+    bloomInstruction.textContent = "Tocá las 3 nubes ☁️ para despejar el cielo.";
+
+    const sunStage = document.createElement("div");
+    sunStage.className = "bloom-stage-center";
+    sunStage.textContent = "⛅";
+
+    const cloudsContainer = document.createElement("div");
+    cloudsContainer.style.display = "flex";
+    cloudsContainer.style.gap = "10px";
+
+    for (let c = 1; c <= 3; c++) {
+      const cloudBtn = document.createElement("button");
+      cloudBtn.type = "button";
+      cloudBtn.className = "bloom-target-item";
+      cloudBtn.innerHTML = `<span>☁️</span><span class="bloom-target-label">Despejar</span>`;
+      cloudBtn.onclick = () => {
+        cloudBtn.style.opacity = "0.2";
+        cloudBtn.style.pointerEvents = "none";
+        clickCount++;
+        audioSynth.playStepSound();
+        updateProgress();
+
+        if (clickCount === 1) sunStage.textContent = "🌤️";
+        else if (clickCount === 2) sunStage.textContent = "☀️";
+        else if (clickCount >= 3) {
+          sunStage.textContent = "🌻";
+          sunStage.classList.add("bloom-stage-pop");
+          handleBloomComplete();
+        }
+      };
+      cloudsContainer.appendChild(cloudBtn);
+    }
+
+    bloomInteractiveArea.appendChild(sunStage);
+    bloomInteractiveArea.appendChild(cloudsContainer);
+
+  } else if (memoryId === 3) {
+    bloomTitle.textContent = "¡Juntá los pétalos de las pasiones!";
+    bloomInstruction.textContent = "Tocá los 3 pétalos 🌹 flotantes para armar la flor.";
+
+    const roseStage = document.createElement("div");
+    roseStage.className = "bloom-stage-center";
+    roseStage.textContent = "🥀";
+
+    const petalsContainer = document.createElement("div");
+    petalsContainer.style.display = "flex";
+    petalsContainer.style.gap = "10px";
+
+    const petalIcons = ["🌹", "🌸", "🌺"];
+    for (let p = 0; p < 3; p++) {
+      const petalBtn = document.createElement("button");
+      petalBtn.type = "button";
+      petalBtn.className = "bloom-target-item";
+      petalBtn.innerHTML = `<span>${petalIcons[p]}</span><span class="bloom-target-label">Juntar</span>`;
+      petalBtn.onclick = () => {
+        petalBtn.style.opacity = "0.2";
+        petalBtn.style.pointerEvents = "none";
+        clickCount++;
+        audioSynth.playStepSound();
+        updateProgress();
+
+        if (clickCount === 1) roseStage.textContent = "🌹";
+        else if (clickCount === 2) roseStage.textContent = "✨🌹✨";
+        else if (clickCount >= 3) {
+          roseStage.textContent = "💖🌹🎉";
+          roseStage.classList.add("bloom-stage-pop");
+          handleBloomComplete();
+        }
+      };
+      petalsContainer.appendChild(petalBtn);
+    }
+
+    bloomInteractiveArea.appendChild(roseStage);
+    bloomInteractiveArea.appendChild(petalsContainer);
+
+  } else if (memoryId === 4) {
+    bloomTitle.textContent = "¡Sellá el pasaporte de aventuras!";
+    bloomInstruction.textContent = "Tocá los 3 destinos 🗽 🗼 🏝️ para estampillar el viaje.";
+
+    const passportStage = document.createElement("div");
+    passportStage.className = "bloom-stage-center";
+    passportStage.textContent = "✉️";
+
+    const stampsContainer = document.createElement("div");
+    stampsContainer.style.display = "flex";
+    stampsContainer.style.gap = "10px";
+
+    const stamps = [
+      { icon: "🗽", label: "Nueva York" },
+      { icon: "🗼", label: "París" },
+      { icon: "🏝️", label: "Playa" },
+    ];
+
+    stamps.forEach((st) => {
+      const stampBtn = document.createElement("button");
+      stampBtn.type = "button";
+      stampBtn.className = "bloom-target-item";
+      stampBtn.innerHTML = `<span>${st.icon}</span><span class="bloom-target-label">${st.label}</span>`;
+      stampBtn.onclick = () => {
+        stampBtn.style.opacity = "0.2";
+        stampBtn.style.pointerEvents = "none";
+        clickCount++;
+        audioSynth.playStepSound();
+        updateProgress();
+
+        if (clickCount === 1) passportStage.textContent = "🗽✉️";
+        else if (clickCount === 2) passportStage.textContent = "🗽🗼✉️";
+        else if (clickCount >= 3) {
+          passportStage.textContent = "✈️🌸🏝️";
+          passportStage.classList.add("bloom-stage-pop");
+          handleBloomComplete();
+        }
+      };
+      stampsContainer.appendChild(stampBtn);
+    });
+
+    bloomInteractiveArea.appendChild(passportStage);
+    bloomInteractiveArea.appendChild(stampsContainer);
+
+  } else if (memoryId === 5) {
+    bloomTitle.textContent = "¡Consentí a Rocco en casa!";
+    bloomInstruction.textContent = "Tocá a Rocco 🐶 3 veces para darle cariños.";
+
+    const roccoStage = document.createElement("div");
+    roccoStage.className = "bloom-stage-center";
+    roccoStage.textContent = "🐶";
+
+    const patBtn = document.createElement("button");
+    patBtn.type = "button";
+    patBtn.className = "bloom-target-item";
+    patBtn.innerHTML = `<span>🐾</span><span class="bloom-target-label">Mimo</span>`;
+
+    patBtn.onclick = () => {
+      clickCount++;
+      audioSynth.playStepSound();
+      updateProgress();
+
+      if (clickCount === 1) roccoStage.textContent = "🐶❤️";
+      else if (clickCount === 2) roccoStage.textContent = "🐶💬 ¡Woof!";
+      else if (clickCount >= 3) {
+        roccoStage.textContent = "🥰🐶🌷";
+        roccoStage.classList.add("bloom-stage-pop");
+        handleBloomComplete();
+      }
+    };
+
+    bloomInteractiveArea.appendChild(roccoStage);
+    bloomInteractiveArea.appendChild(patBtn);
+
+  } else if (memoryId === 6) {
+    bloomTitle.textContent = "¡Atá el gran ramo de la familia!";
+    bloomInstruction.textContent = "Tocá las 3 cintas rosa 🎀 para armar el ramo.";
+
+    const bouquetStage = document.createElement("div");
+    bouquetStage.className = "bloom-stage-center";
+    bouquetStage.textContent = "🌻🌹🌷";
+
+    const ribbonsContainer = document.createElement("div");
+    ribbonsContainer.style.display = "flex";
+    ribbonsContainer.style.gap = "10px";
+
+    for (let r = 1; r <= 3; r++) {
+      const ribbonBtn = document.createElement("button");
+      ribbonBtn.type = "button";
+      ribbonBtn.className = "bloom-target-item";
+      ribbonBtn.innerHTML = `<span>🎀</span><span class="bloom-target-label">Atar</span>`;
+      ribbonBtn.onclick = () => {
+        ribbonBtn.style.opacity = "0.2";
+        ribbonBtn.style.pointerEvents = "none";
+        clickCount++;
+        audioSynth.playStepSound();
+        updateProgress();
+
+        if (clickCount === 1) bouquetStage.textContent = "💐✨";
+        else if (clickCount === 2) bouquetStage.textContent = "💐🎀✨";
+        else if (clickCount >= 3) {
+          bouquetStage.textContent = "💖💐🎉";
+          bouquetStage.classList.add("bloom-stage-pop");
+          handleBloomComplete();
+        }
+      };
+      ribbonsContainer.appendChild(ribbonBtn);
+    }
+
+    bloomInteractiveArea.appendChild(bouquetStage);
+    bloomInteractiveArea.appendChild(ribbonsContainer);
+  }
 
   bloomOverlay.classList.remove("hidden");
-
-  bloomActionBtn.onclick = () => {
-    bloomActionBtn.disabled = true;
-    audioSynth.playBloomSound();
-    bloomStage.textContent = bloomConfig.bloomedIcon;
-    bloomStage.classList.add("bloom-stage-pop");
-
-    setTimeout(() => {
-      bloomOverlay.classList.add("hidden");
-      openMemory(memoryId);
-    }, 700);
-  };
 }
 
 function createImageMedia(mediaItem) {
@@ -1378,107 +1593,19 @@ function getActiveMemory() {
   return memories.find((memory) => memory.id === activeMemoryId);
 }
 
-let galleryDisplayMode = "grid"; // "grid" (lado a lado) o "slideshow" (avanza en tiempo lento)
-let slideshowInterval = null;
-
-function stopSlideshowTimer() {
-  if (slideshowInterval) {
-    clearInterval(slideshowInterval);
-    slideshowInterval = null;
-  }
-}
-
-function startSlideshowTimer() {
-  stopSlideshowTimer();
-  slideshowInterval = setInterval(() => {
-    const memory = getActiveMemory();
-    if (!memory) return;
-    if (activeGalleryIndex < memory.gallery.length - 1) {
-      activeGalleryIndex++;
-    } else {
-      activeGalleryIndex = 0;
-    }
-    renderMemoryMedia(memory);
-  }, 4200);
-}
-
-function renderGalleryThumbnails(memory) {
-  memoryThumbnails.innerHTML = "";
-
-  memory.gallery.forEach((mediaItem, index) => {
-    const thumbButton = document.createElement("button");
-    thumbButton.type = "button";
-    thumbButton.className = "memory-thumb";
-
-    if (index === activeGalleryIndex) {
-      thumbButton.classList.add("active");
-    }
-
-    const inferredType = inferMediaType(mediaItem);
-
-    thumbButton.innerHTML = `
-      <span class="memory-thumb-type">${inferredType === "video" ? "📹 Video" : "📷 Foto"}</span>
-      <span class="memory-thumb-index">${index + 1}</span>
-    `;
-    thumbButton.addEventListener("click", () => {
-      activeGalleryIndex = index;
-      renderMemoryMedia(memory);
-    });
-    memoryThumbnails.appendChild(thumbButton);
-  });
-}
-
 function renderMemoryMedia(memory) {
   memoryMedia.innerHTML = "";
 
-  if (galleryDisplayMode === "grid") {
-    stopSlideshowTimer();
-    if (btnModeGrid) btnModeGrid.classList.add("active");
-    if (btnModeSlideshow) btnModeSlideshow.classList.remove("active");
-    if (slideshowStatus) slideshowStatus.classList.add("hidden");
-    if (memoryGalleryNav) memoryGalleryNav.classList.add("hidden");
-    if (memoryThumbnails) memoryThumbnails.classList.add("hidden");
+  const gridContainer = document.createElement("div");
+  gridContainer.className = "polaroid-grid";
 
-    const gridContainer = document.createElement("div");
-    gridContainer.className = "polaroid-grid";
-
-    memory.gallery.forEach((mediaItem) => {
-      const inferredType = inferMediaType(mediaItem);
-      const mediaElement = inferredType === "video" ? createVideoMedia(mediaItem) : createImageMedia(mediaItem);
-      gridContainer.appendChild(mediaElement);
-    });
-
-    memoryMedia.appendChild(gridContainer);
-  } else {
-    if (btnModeSlideshow) btnModeSlideshow.classList.add("active");
-    if (btnModeGrid) btnModeGrid.classList.remove("active");
-    if (slideshowStatus) slideshowStatus.classList.remove("hidden");
-    if (memoryGalleryNav) memoryGalleryNav.classList.remove("hidden");
-    if (memoryThumbnails) memoryThumbnails.classList.remove("hidden");
-
-    const mediaItem = memory.gallery[activeGalleryIndex];
+  memory.gallery.forEach((mediaItem) => {
     const inferredType = inferMediaType(mediaItem);
     const mediaElement = inferredType === "video" ? createVideoMedia(mediaItem) : createImageMedia(mediaItem);
-    memoryMedia.appendChild(mediaElement);
-    renderGalleryThumbnails(memory);
-    updateGalleryControls(memory);
+    gridContainer.appendChild(mediaElement);
+  });
 
-    if (!slideshowInterval) {
-      startSlideshowTimer();
-    }
-  }
-}
-
-function updateGalleryControls(memory) {
-  const total = memory.gallery.length;
-  memoryGalleryStatus.textContent = `${activeGalleryIndex + 1} / ${total}`;
-  prevMediaBtn.disabled = activeGalleryIndex === 0;
-
-  if (activeGalleryIndex === total - 1 && activeMemoryId === memories.length) {
-    completeStopBtn.textContent = " Ver Gran Ramo Final 💐";
-  } else {
-    completeStopBtn.textContent = "Seguir Caminando →";
-  }
+  memoryMedia.appendChild(gridContainer);
 }
 
 function updateTopProgress() {
@@ -1487,37 +1614,10 @@ function updateTopProgress() {
   if (curWp === 0) {
     topProgressBadge.textContent = "🌸 Entrada del Jardín";
     if (timelineProgress) timelineProgress.textContent = "Entrada al Jardín de Recuerdos";
-
-    if (btnWalkPrev) {
-      btnWalkPrev.disabled = true;
-      btnWalkPrev.textContent = "⬅️ En la Entrada";
-    }
-    if (btnWalkNext) {
-      btnWalkNext.disabled = false;
-      btnWalkNext.textContent = `🚶‍♂️ Avanzar a Flor 1 (${memories[0].label}) →`;
-    }
-    if (btnOpenCurrent) {
-      btnOpenCurrent.textContent = `🌸 Entrar a Flor 1 (${memories[0].label})`;
-    }
   } else {
     activeMemoryId = curWp;
     topProgressBadge.textContent = `🌸 ${curWp} / ${memories.length}`;
     if (timelineProgress) timelineProgress.textContent = `Flor ${curWp} de ${memories.length}`;
-
-    if (btnWalkPrev) {
-      btnWalkPrev.disabled = false;
-      btnWalkPrev.textContent = curWp === 1 ? "⬅️ Volver a la Entrada" : `⬅️ Flor ${curWp - 1} (${memories[curWp - 2].label})`;
-    }
-    if (btnWalkNext) {
-      const isLast = curWp >= memories.length;
-      btnWalkNext.disabled = isLast || unlockedStops < curWp + 1;
-      btnWalkNext.textContent = isLast
-        ? "✨ ¡Llegaste al Ramo Final!"
-        : `🚶‍♂️ Caminar a Flor ${curWp + 1} (${memories[curWp].label}) →`;
-    }
-    if (btnOpenCurrent) {
-      btnOpenCurrent.textContent = `📸 Ver Fotos de Flor ${curWp}`;
-    }
   }
 }
 
@@ -1526,7 +1626,6 @@ function openMemory(memoryId) {
   if (!selectedMemory) return;
 
   activeMemoryId = memoryId;
-  activeGalleryIndex = 0;
   memoryStep.textContent = `Flor ${memoryId} de ${memories.length}`;
   memoryTitle.textContent = selectedMemory.title;
   memoryDescription.textContent = selectedMemory.description;
@@ -1540,7 +1639,6 @@ function openMemory(memoryId) {
 }
 
 function closeMemoryModal() {
-  stopSlideshowTimer();
   memoryModal.classList.add("hidden");
 }
 
@@ -1642,81 +1740,31 @@ function createPetals() {
 function switchView(view) {
   currentView = view;
   if (view === "garden") {
-    btnViewGarden.classList.add("active");
-    btnViewList.classList.remove("active");
-    gardenSection.classList.remove("hidden");
-    timelineCard.classList.add("hidden");
-    finalCard.classList.add("hidden");
+    if (btnViewGarden) btnViewGarden.classList.add("active");
+    if (btnViewList) btnViewList.classList.remove("active");
+    if (gardenSection) gardenSection.classList.remove("hidden");
+    if (timelineCard) timelineCard.classList.add("hidden");
+    if (finalCard) finalCard.classList.add("hidden");
   } else {
-    btnViewList.classList.add("active");
-    btnViewGarden.classList.remove("active");
-    gardenSection.classList.add("hidden");
-    timelineCard.classList.remove("hidden");
-    finalCard.classList.add("hidden");
+    if (btnViewList) btnViewList.classList.add("active");
+    if (btnViewGarden) btnViewGarden.classList.remove("active");
+    if (gardenSection) gardenSection.classList.add("hidden");
+    if (timelineCard) timelineCard.classList.remove("hidden");
+    if (finalCard) finalCard.classList.add("hidden");
     renderTimeline();
   }
 }
 
 // Event Listeners
-btnViewGarden.addEventListener("click", () => switchView("garden"));
-btnViewList.addEventListener("click", () => switchView("list"));
+if (btnViewGarden) btnViewGarden.addEventListener("click", () => switchView("garden"));
+if (btnViewList) btnViewList.addEventListener("click", () => switchView("list"));
 
-btnAudioToggle.addEventListener("click", () => {
-  const active = audioSynth.toggle();
-  btnAudioToggle.classList.toggle("active", active);
-  audioIcon.textContent = active ? "🔊" : "🎵";
-  audioText.textContent = active ? "Música: On" : "Música: Off";
-});
-
-btnWalkNext.addEventListener("click", () => {
-  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : 0;
-  const nextTargetIndex = curWp + 1;
-  if (nextTargetIndex <= memories.length) {
-    unlockedStops = Math.max(unlockedStops, nextTargetIndex);
-    if (gardenEngine) {
-      gardenEngine.walkToWaypoint(nextTargetIndex);
-    } else {
-      triggerBloomInteraction(nextTargetIndex);
-    }
-  }
-});
-
-btnWalkPrev.addEventListener("click", () => {
-  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : 1;
-  const prevTargetIndex = Math.max(0, curWp - 1);
-  if (gardenEngine) {
-    gardenEngine.walkToWaypoint(prevTargetIndex);
-  } else {
-    if (prevTargetIndex > 0) triggerBloomInteraction(prevTargetIndex);
-  }
-});
-
-btnOpenCurrent.addEventListener("click", () => {
-  const curWp = gardenEngine ? gardenEngine.character.currentWaypointIndex : activeMemoryId;
-  const targetId = curWp === 0 ? 1 : curWp;
-  if (gardenEngine && curWp === 0) {
-    gardenEngine.walkToWaypoint(1);
-  } else {
-    triggerBloomInteraction(targetId);
-  }
-});
-
-prevMediaBtn.addEventListener("click", () => stepGallery(-1));
-nextMediaBtn.addEventListener("click", () => stepGallery(1));
-completeStopBtn.addEventListener("click", continueJourney);
-
-if (btnModeGrid) {
-  btnModeGrid.addEventListener("click", () => {
-    galleryDisplayMode = "grid";
-    renderMemoryMedia(getActiveMemory());
-  });
-}
-
-if (btnModeSlideshow) {
-  btnModeSlideshow.addEventListener("click", () => {
-    galleryDisplayMode = "slideshow";
-    activeGalleryIndex = 0;
-    renderMemoryMedia(getActiveMemory());
+if (btnAudioToggle) {
+  btnAudioToggle.addEventListener("click", () => {
+    const active = audioSynth.toggle();
+    btnAudioToggle.classList.toggle("active", active);
+    if (audioIcon) audioIcon.textContent = active ? "🔊" : "🎵";
+    if (audioText) audioText.textContent = active ? "Música: On" : "Música: Off";
   });
 }
 
