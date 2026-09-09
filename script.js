@@ -385,7 +385,6 @@ const memoryStep = document.getElementById("memory-step");
 const memoryTitle = document.getElementById("memory-title");
 const memoryDescription = document.getElementById("memory-description");
 const memoryMedia = document.getElementById("memory-media");
-const memoryNote = document.getElementById("memory-note");
 
 const bloomOverlay = document.getElementById("bloom-overlay");
 const bloomCloseX = document.getElementById("bloom-close-x");
@@ -1501,40 +1500,8 @@ function createImageMedia(mediaItem) {
 
   front.appendChild(image);
 
-  if (mediaItem.caption) {
-    const caption = document.createElement("div");
-    caption.className = "polaroid-caption";
-    caption.innerHTML = `
-      <span>${mediaItem.caption}</span>
-      <span class="flip-hint">🔄 Toca la foto para ver el mensaje al dorso</span>
-    `;
-    front.appendChild(caption);
-  }
-
-  // Dorso
-  const back = document.createElement("div");
-  back.className = "polaroid-back";
-
-  const backNote = document.createElement("p");
-  backNote.className = "polaroid-back-note";
-  backNote.textContent = mediaItem.backNote || "💌 Un regalo del corazón para la mejor Mamá del mundo.";
-
-  const hintBack = document.createElement("span");
-  hintBack.className = "flip-hint";
-  hintBack.textContent = "🔄 Toca para volver a la foto";
-
-  back.appendChild(backNote);
-  back.appendChild(hintBack);
-
   inner.appendChild(front);
-  inner.appendChild(back);
   card.appendChild(inner);
-
-  // Click para dar vuelta en 3D
-  card.addEventListener("click", () => {
-    card.classList.toggle("flipped");
-    audioSynth.playStepSound();
-  });
 
   return card;
 }
@@ -1566,13 +1533,6 @@ function createVideoMedia(mediaItem) {
 
     video.appendChild(source);
     wrapper.appendChild(video);
-  }
-
-  if (mediaItem.caption) {
-    const caption = document.createElement("p");
-    caption.className = "video-caption";
-    caption.textContent = mediaItem.caption;
-    wrapper.appendChild(caption);
   }
 
   return wrapper;
@@ -1629,7 +1589,6 @@ function openMemory(memoryId) {
   memoryStep.textContent = `Flor ${memoryId} de ${memories.length}`;
   memoryTitle.textContent = selectedMemory.title;
   memoryDescription.textContent = selectedMemory.description;
-  memoryNote.textContent = selectedMemory.note;
 
   renderMemoryMedia(selectedMemory);
 
