@@ -239,7 +239,7 @@ const memories = [
     id: 5,
     icon: "🌷",
     label: "El Hogar",
-    title: "Rocco, mascotas y amor de hogar",
+    title: "Rocco y el amor del hogar",
     description:
       "El calor de nuestro hogar, los mimos con Rocco, el cuidado de cada detalle y el amor incondicional que recibimos todos los días.",
     note: "🌷 Quinta parada: El calor del hogar y la compañía incondicional.",
@@ -1712,7 +1712,12 @@ if (btnAudioToggle) {
 }
 
 if (modalCloseX) modalCloseX.addEventListener("click", closeMemoryModal);
-if (backToGardenBtn) backToGardenBtn.addEventListener("click", closeMemoryModal);
+if (backToGardenBtn) {
+  backToGardenBtn.addEventListener("click", () => {
+    closeMemoryModal();
+    switchView("garden");
+  });
+}
 if (bloomCloseX) bloomCloseX.addEventListener("click", () => bloomOverlay.classList.add("hidden"));
 
 memoryModal.addEventListener("click", (e) => {
