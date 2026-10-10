@@ -9,7 +9,7 @@ const memories = [
     label: "Las Semillas",
     title: "Donde todo comenzó",
     description:
-      "Estas primeras fotos guardan el inicio de todo: tus cuidados constantes desde el primer día, tu ternura infinita y cómo nos rodeaste de amor.",
+      "Estas primeras fotos guardan tus primeros momentos importantes: tus niñez, adolescencia y la llegada del dia tan esperado, el casamiento con papa entrando de la mano del abuelo Jose.",
     note: "🌸 Primera parada de nuestro Jardín de Recuerdos.",
     bloom: {
       stageIcon: "🌱",
@@ -67,7 +67,7 @@ const memories = [
     label: "El Sol Diario",
     title: "Acompañándonos a crecer",
     description:
-      "A lo largo de los años, fuiste el sol de todos los días: las tardes compartidas, las charlas reconfortantes, los mates y tu risa contagiosa.",
+      "A lo largo de los años, fuiste el sol de todos los días: tus cuidados desde el primer dia, tu ternura y como nos rodeaste de amor con charlas, mates y risas.",
     note: "🌻 Segunda parada: El calor y la alegría de cada día.",
     bloom: {
       stageIcon: "☁️",
