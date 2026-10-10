@@ -707,9 +707,11 @@ body {
 .polaroid-front img {
   display: block;
   width: 100%;
-  border-radius: 14px;
+  height: auto;
   max-height: min(58vh, 460px);
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 14px;
   background: #fdf5f7;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -838,7 +840,8 @@ body {
 
 .polaroid-grid .polaroid-front img {
   max-height: 220px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .polaroid-grid .polaroid-caption {
